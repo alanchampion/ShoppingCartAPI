@@ -1,0 +1,40 @@
+{
+  "products": [
+    {
+      "id": "001",
+      "name": "item1",
+      "price": 120,
+      "quantity": 1
+    },
+    {
+      "id": "002",
+      "name": "item2",
+      "price": 60,
+      "quantity": 1
+    },
+    {
+      "id": "003",
+      "name": "item3",
+      "price": 200,
+      "quantity": 1
+    },
+    {
+      "id": "004",
+      "name": "item4",
+      "price": 20,
+      "quantity": 0
+    },
+    {
+      "id": "005",
+      "name": "item5",
+      "price": 270,
+      "quantity": 1
+    },
+    {
+      "id": "006",
+      "name": "item6",
+      "price": 80,
+      "quantity": 0
+    }
+  ]
+}
