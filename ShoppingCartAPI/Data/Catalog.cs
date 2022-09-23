@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using ShoppingCartAPI.Data.Interface;
 using ShoppingCartAPI.Models;
+using System.Collections.Generic;
 //using System.Text.Json;
 //using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -9,11 +10,13 @@ namespace ShoppingCartAPI.Data
 {
     // In a true environment, this would probably be a database context.
     // Instead, we'll just simplify it here. 
+
     // I have included sql statements that would be actually doing this. 
+    // SQL table would be something like catalog(id, name, price, quantity, in_cart)
     public class Catalog : ICatalog
     {
-        // I'm having this be a dictionary just to make it easier to access based on id. 
-        private List<Product>? Products{ get; set; }
+        private List<Product>? Products { get; set; }
+        private List<Product> Cart { get; set; }
 
         public Catalog()
         {
@@ -33,38 +36,8 @@ namespace ShoppingCartAPI.Data
                     }
                 }
             }
-            // Values just to test with if wanted. 
-            /*Products = new List<Product>
-            {
-                new Product
-                {
-                    Id = "001",
-                    Name = "item1",
-                    Price = 100,
-                    Quantity = 1
-                },
-                new Product
-                {
-                    Id = "002",
-                    Name = "item2",
-                    Price = 60,
-                    Quantity = 1
-                },
-                new Product
-                {
-                    Id = "003",
-                    Name = "item3",
-                    Price = 210,
-                    Quantity = 1
-                },
-                new Product
-                {
-                    Id = "004",
-                    Name = "item4",
-                    Price = 170,
-                    Quantity = 0
-                }
-            };*/
+
+            Cart = new List<Product>();
         }
 
         // SELECT id, name, price, quantity FROM catalog;
@@ -113,6 +86,66 @@ namespace ShoppingCartAPI.Data
             var stockedProducts = GetStockedProducts();
 
             return stockedProducts.Count();
+        }
+
+        // SELECT id, name, price, quantity FROM catalog WHERE in_cart = true;
+        public IEnumerable<Product> GetCart()
+        {
+            return Cart;
+        }
+
+        // SELECT id, name, price, quantity FROM catalog WHERE in_cart = true AND id = {id};
+        public Product? GetProductFromCart(string id)
+        {
+            return Cart.Find(p => { return p.Id == id; });
+        }
+
+        // UPDATE catalog SET quantity = 0, in_cart = true WHERE id = {id};
+        public bool AddProductToCart(string id)
+        {
+            Product? product = GetProduct(id);
+            if (product == null || product.Quantity == 0)
+            {
+                return false;
+            }
+
+            if(GetProductFromCart(id) != null)
+            {
+                throw new NotImplementedException();
+            }
+
+            product.Quantity = 0;
+            Cart.Add(product);
+
+            return true;
+        }
+
+        // UPDATE catalog SET quantity = 1, in_cart = false WHERE id = {id};
+        public bool RemoveProductFromCart(string id)
+        {
+            Product? product = GetProductFromCart(id);
+            if (product == null)
+            {
+                return false;
+            }
+
+            product.Quantity = 1;
+            Cart.Remove(product);
+
+            return true;
+        }
+
+        // // UPDATE catalog SET in_cart = false WHERE id = {id};
+        public bool Checkout()
+        {
+            if (Cart.Count == 0)
+            {
+                throw new NotImplementedException();
+            }
+
+            Cart.Clear();
+
+            return true;
         }
     }
 }
