@@ -22,12 +22,15 @@ namespace ShoppingCartAPI.Data
         {
             if (File.Exists("products.json"))
             {
+                // Read in the file. 
                 using (StreamReader r = new StreamReader("products.json"))
                 {
                     string json = r.ReadToEnd();
+                    // Parse and grab the products value from the json. 
                     JToken? products = JObject.Parse(json)["products"];
                     if (products != null)
                     {
+                        // Deserialize the products. 
                         Products = JsonConvert.DeserializeObject<List<Product>>(products.ToString()) ?? new List<Product>();
                     }
                     else
@@ -43,6 +46,7 @@ namespace ShoppingCartAPI.Data
         // SELECT id, name, price, quantity FROM catalog;
         public IEnumerable<Product> GetAllProducts()
         {
+            // For now just throw an exception to let the controller know that it needs to return a 501 - Not Implemented. 
             if (Products == null)
             {
                 throw new NotImplementedException();
@@ -53,6 +57,7 @@ namespace ShoppingCartAPI.Data
         // SELECT id, name, price, quantity FROM catalog WHERE NOT quantity = 0;
         public IEnumerable<Product> GetStockedProducts()
         {
+            // For now just throw an exception to let the controller know that it needs to return a 501 - Not Implemented. 
             if (Products == null)
             {
                 throw new NotImplementedException();
@@ -73,6 +78,7 @@ namespace ShoppingCartAPI.Data
         // SELECT COUNT(*) FROM catalog WHERE NOT quantity = 0;
         public int GetSize()
         {
+            // Just ensure that Products isn't null. Only null if the products.json file doesn't exist. 
             if (Products == null)
             {
                 return -1;
@@ -103,12 +109,15 @@ namespace ShoppingCartAPI.Data
         // UPDATE catalog SET quantity = 0, in_cart = true WHERE id = {id};
         public bool AddProductToCart(string id)
         {
+            // Get the product from the catalog. 
             Product? product = GetProduct(id);
             if (product == null || product.Quantity == 0)
             {
+                // Return false if the product doesn't exist or we don't have any quantity. 
                 return false;
             }
 
+            // If the product is already in the cart, ensure the controller returns a 501 - Not Implemented. 
             if(GetProductFromCart(id) != null)
             {
                 throw new NotImplementedException();

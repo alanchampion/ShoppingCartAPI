@@ -5,6 +5,9 @@ using ShoppingCartAPI.Models;
 
 namespace ShoppingCartAPI.Controllers
 {
+    // Endpoints for the cart.
+    // TODO add middleware to catch errors instead
+    // TODO add middleware to add the "success" item into every call
     [ApiController]
     [Route("[controller]")]
     public class CartController : ControllerBase
@@ -18,8 +21,7 @@ namespace ShoppingCartAPI.Controllers
             _catalog = catalog;
         }
 
-        // TODO add middleware to catch errors instead
-        // TODO add middleware to add the "success" item into every call
+        // Get all products in the cart and the total cost of the items. 
         [HttpGet]
         public ActionResult GetCart()
         {
@@ -34,6 +36,7 @@ namespace ShoppingCartAPI.Controllers
             });
         }
 
+        // Get one item from the cart using id. 
         [HttpGet("item/{id}")]
         public ActionResult GetProduct([FromRoute] string id)
         {
@@ -51,6 +54,7 @@ namespace ShoppingCartAPI.Controllers
             });
         }
 
+        // Add one item to the cart using the id. 
         [HttpPost("item/{id}")]
         public ActionResult AddProduct([FromRoute] string id)
         {
@@ -71,6 +75,7 @@ namespace ShoppingCartAPI.Controllers
             }
         }
 
+        // Remove one item from the cart using id. 
         [HttpDelete("item/{id}")]
         public ActionResult RemoveProduct([FromRoute] string id)
         {
@@ -85,6 +90,7 @@ namespace ShoppingCartAPI.Controllers
             }
         }
 
+        // Returns the current cart and cost of all the items. Clears the cart from all items. 
         [HttpPost("checkout")]
         public ActionResult Checkout()
         {
@@ -94,6 +100,7 @@ namespace ShoppingCartAPI.Controllers
                 var products = _catalog.GetCart().Select(p => new Product() { Id = p.Id, Name = p.Name, Price = p.Price, Quantity = p.Quantity }).ToList();
                 int cost = GetCost(products);
 
+                // Clear the cart. 
                 _catalog.Checkout();
 
                 return Ok(new
@@ -108,6 +115,7 @@ namespace ShoppingCartAPI.Controllers
             }
         }
 
+        // Get the total cost from a list of products. 
         private static int GetCost(IEnumerable<Product> products)
         {
             int cost = 0;

@@ -4,6 +4,9 @@ using ShoppingCartAPI.Models;
 
 namespace ShoppingCartAPI.Controllers
 {
+    // Endpoints for the entire catalog.
+    // TODO add middleware to catch errors instead
+    // TODO add middleware to add the "success" item into every call
     [ApiController]
     [Route("[controller]")]
     public class CatalogController : ControllerBase
@@ -17,8 +20,7 @@ namespace ShoppingCartAPI.Controllers
             _catalog = catalog;
         }
 
-        // TODO add middleware to catch errors instead
-        // TODO add middleware to add the "success" item into every call
+        // Get all the products in the catalog that are available. 
         [HttpGet]
         public IActionResult GetProducts()
         {
@@ -36,6 +38,7 @@ namespace ShoppingCartAPI.Controllers
             }
         }
 
+        // Get the size of the catalog. Only includes products that are available.
         [HttpGet("size")]
         public IActionResult GetSize()
         {
@@ -54,6 +57,8 @@ namespace ShoppingCartAPI.Controllers
             }
         }
 
+        // Get product from the catalog using id. 
+        // Can get items that are not available. 
         [HttpGet("{id}")]
         public IActionResult GetProduct([FromRoute] string id)
         {
